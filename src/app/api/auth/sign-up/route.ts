@@ -8,13 +8,13 @@ export async function POST(req: NextRequest) {
     const { name, email, password } = await req.json();
 
     if (!name || !email || !password) {
-        return NextResponse.json({ message: 'Tous les champs sont requis.' }, { status: 400 });
+        return NextResponse.json({ message: 'All fields are required.' }, { status: 400 });
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
 
     if (existingUser) {
-        return NextResponse.json({ message: 'Cet email est déjà utilisée.' }, { status: 400 });
+        return NextResponse.json({ message: 'This email is already used.' }, { status: 400 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -23,5 +23,5 @@ export async function POST(req: NextRequest) {
         data: { name, email, password: hashedPassword },
     });
 
-    return NextResponse.json({ message: 'Utilisateur créé', user, status: 201 });
+    return NextResponse.json({ message: 'User created', user, status: 201 });
 }
