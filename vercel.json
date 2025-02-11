@@ -8,11 +8,5 @@
   ],
   "env": {
     "DATABASE_URL": "file:./prisma/dev.db"
-  },
-  "functions": {
-    "api/**/*.js": {
-      "maxDuration": 10,
-      "memory": 1024
-    }
   }
 }
