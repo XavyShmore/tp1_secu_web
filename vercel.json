@@ -7,12 +7,12 @@
     }
   ],
   "env": {
-    "DATABASE_URL": "file:./prisma/dev.db"  // You can use SQLite here during development. For production, use a hosted database like PostgreSQL.
+    "DATABASE_URL": "file:./prisma/dev.db"
   },
   "functions": {
     "api/**/*.js": {
-      "maxDuration": 10,  // Max duration for serverless functions (adjust as needed)
-      "memory": 1024  // Memory allocated to each function (adjust as needed)
+      "maxDuration": 10,
+      "memory": 1024
     }
   }
 }
