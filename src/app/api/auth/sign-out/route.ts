@@ -5,7 +5,7 @@ export async function POST() {
 
     response.cookies.set('user', '', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'development',
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         maxAge: -1,  // Set the cookie to expire immediately
         path: '/',
