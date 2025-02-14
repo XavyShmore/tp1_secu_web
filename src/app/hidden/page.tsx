@@ -35,6 +35,7 @@ export default function Hidden() {
     const handleSignOut = async () => {
         const response = await fetch("/api/auth/sign-out", {method: "POST"});
         if (response.status === 200) {
+            localStorage.removeItem("isAuthenticated");
             window.location.reload();
         }
     };

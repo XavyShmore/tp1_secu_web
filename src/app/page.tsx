@@ -5,10 +5,15 @@ import {useRouter} from "next/navigation";
 
 function Snowfall() {
     const [flakes, setFlakes] = useState<number[]>([]);
+    const router = useRouter();
 
     useEffect(() => {
         setFlakes(new Array(50).fill(0).map((_, i) => i));
-    }, []);
+        const isAuthenticated = localStorage.getItem("isAuthenticated");
+        if (isAuthenticated === "true") {
+            router.push("/hidden");
+        }
+    }, [router]);
 
     return (
         <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
