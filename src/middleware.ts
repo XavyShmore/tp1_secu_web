@@ -13,6 +13,11 @@ export function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL("/sign-in", req.url));
     }
 
+    if (userCookie && protectedRoutes.some(route => req.nextUrl.pathname.startsWith(route))) {
+        console.log("reste sur /hidden");
+        return NextResponse.redirect(new URL("/hidden", req.url));
+    }
+
     console.log("Accès autorisé !");
     return NextResponse.next();
 }
