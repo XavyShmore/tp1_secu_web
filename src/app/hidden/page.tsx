@@ -2,6 +2,7 @@
 
 import React, {useEffect, useState} from "react";
 import TodoList from "@/app/components/todo-list";
+import Navbar from "@/app/components/navbar";
 
 interface user {
     name: string;
@@ -42,29 +43,40 @@ export default function Hidden() {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen text-center">
-                <p>Loading...</p>
+            <div>
+                <Navbar />
+                <div className="flex flex-col items-center justify-center min-h-screen text-center">
+                    <p>Loading...</p>
+                </div>
             </div>
         );
     }
 
     if (!user) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen text-center">
-                <p>No user found.</p>
+            <div>
+                <Navbar />
+                <div className="flex flex-col items-center justify-center min-h-screen text-center">
+                    <p>No user found.</p>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen text-center">
-            <p>Congratulations <b>{user.name}</b>, you have accessed the hidden page</p>
-            <p>If you want to sign out click on button below : </p>
-            <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-3xl hover:bg-blue-600"
-                    onClick={handleSignOut}>
-                Sign out
-            </button>
-            <TodoList/>
+        <div>
+            <Navbar/>
+            <div className="flex flex-col items-center justify-center min-h-screen text-center">
+                <p>Congratulations <b>{user.name}</b>, you have accessed the hidden page</p>
+                <p>If you want to sign out click on button below : </p>
+
+                <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-3xl hover:bg-blue-600"
+                        onClick={handleSignOut}>
+                    Sign out
+                </button>
+                <TodoList/>
+            </div>
         </div>
+
     );
 }
