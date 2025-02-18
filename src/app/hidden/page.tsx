@@ -41,32 +41,16 @@ export default function Hidden() {
         }
     };
 
-    if (isLoading) {
-        return (
-            <div>
-                <Navbar />
-                <div className="flex flex-col items-center justify-center min-h-screen text-center">
-                    <p>Loading...</p>
-                </div>
-            </div>
+    const loadingBody = (
+                <p>Loading...</p>
         );
-    }
 
-    if (!user) {
-        return (
-            <div>
-                <Navbar />
-                <div className="flex flex-col items-center justify-center min-h-screen text-center">
-                    <p>No user found.</p>
-                </div>
-            </div>
+    const userNotFoundBody = (
+                <p>No user found.</p>
         );
-    }
 
-    return (
-        <div>
-            <Navbar/>
-            <div className="flex flex-col items-center justify-center min-h-screen text-center">
+    const todoBody = (user:user)=>(
+            <div>
                 <p>Congratulations <b>{user.name}</b>, you have accessed the hidden page</p>
                 <p>If you want to sign out click on button below : </p>
 
@@ -76,7 +60,20 @@ export default function Hidden() {
                 </button>
                 <TodoList/>
             </div>
-        </div>
+        );
 
+    let pageBody;
+
+    if (isLoading) pageBody = loadingBody;
+    else if (!user) pageBody = userNotFoundBody;
+    else pageBody = todoBody(user);
+
+    return (
+        <div>
+            <Navbar/>
+            <div className="flex flex-col items-center justify-center min-h-screen text-center">
+                {pageBody}
+            </div>
+        </div>
     );
 }
