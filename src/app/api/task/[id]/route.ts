@@ -1,16 +1,16 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {PrismaClient} from '@prisma/client';
 
+
 const prisma = new PrismaClient();
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest) {
     try {
-        console.log("fdsafdsafdasfdassdfa ", params.id);
-        const id = await params.id;
+        const id = req.nextUrl.pathname.split('/').pop()!;
         const { completed } = await req.json();
 
         const updatedTask = await prisma.task.update({
-            where: { id },
+            where: {id} ,
             data: { completed },
             select: {
                 id: true,
@@ -26,8 +26,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-    const id = params.id;
+export async function DELETE(req: NextRequest) {
+    const id = req.nextUrl.pathname.split('/').pop()!;
 
     if (!id) {
         return NextResponse.json({ message: "ID not provided" }, { status: 400 });
