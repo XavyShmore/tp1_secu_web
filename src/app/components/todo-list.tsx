@@ -21,17 +21,11 @@ export default function TodoList({userId}: { userId: string }) {
             } else {
                 try {
                     const response = await fetch(`/api/task?userId=${userId}`);
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch tasks: ${response.statusText}`);
-                    }
 
-                    const body = await response.json();
-
-                    if (Array.isArray(body.tasks)) {
+                    if (response.status === 200) {
+                        const body = await response.json();
                         setTodos(body.tasks);
                         localStorage.setItem("todos", JSON.stringify(body.tasks));
-                    } else {
-                        console.error("Tasks are not in the expected format.");
                     }
                 } catch (error) {
                     console.error("Error fetching tasks:", error);
@@ -70,12 +64,7 @@ export default function TodoList({userId}: { userId: string }) {
 
                 if (status === 201) {
                     setTodos((prevTodos) => {
-                        if (Array.isArray(prevTodos)) {
-                            return [...prevTodos, newTask];
-                        } else {
-                            console.error("prevTodos is not an array", prevTodos);
-                            return [newTask];
-                        }
+                        return [...prevTodos, newTask];
                     });
                     setInput("");
                 } else {
@@ -152,31 +141,28 @@ export default function TodoList({userId}: { userId: string }) {
             </div>
 
             <ul className="mt-6">
-                {Array.isArray(todos) && todos.length > 0 ? (
-                    todos.map((todo) => (
-                        <li
-                            key={todo.id}
-                            className={`flex items-center justify-between mt-2 ${todo.completed ? 'line-through text-gray-500' : ''}`}
-                        >
-                            <span>{todo.content}</span>
-                            <div>
-                                <button
-                                    onClick={() => toggleTodo(todo.id)}
-                                    className="mx-2 p-1 bg-green-500 text-white rounded-3xl"
-                                >
-                                    {todo.completed ? "Undo" : "Complete"}
-                                </button>
-                                <button
-                                    onClick={() => removeTodo(todo.id)}
-                                    className="p-1 bg-red-500 text-white rounded-3xl"
-                                >
-                                    Delete
-                                </button>
-                            </div>
-                        </li>
-                    ))
-                ) : null}
-
+                {todos.map((todo) => (
+                    <li
+                        key={todo.id}
+                        className={`flex items-center justify-between mt-2 ${todo.completed ? 'line-through text-gray-500' : ''}`}
+                    >
+                        <span>{todo.content}</span>
+                        <div>
+                            <button
+                                onClick={() => toggleTodo(todo.id)}
+                                className="mx-2 p-1 bg-green-500 text-white rounded-3xl"
+                            >
+                                {todo.completed ? "Undo" : "Complete"}
+                            </button>
+                            <button
+                                onClick={() => removeTodo(todo.id)}
+                                className="p-1 bg-red-500 text-white rounded-3xl"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </li>
+                ))}
             </ul>
         </div>
     );

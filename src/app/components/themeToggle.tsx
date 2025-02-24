@@ -16,6 +16,7 @@ export default function ThemeToggle() {
         document.documentElement.dataset.theme = userTheme;
         setCurrentTheme(userTheme);
     }, []);
+
     const toggle = ()=>{
         const userTheme = window.localStorage.getItem("definedTheme");
 
