@@ -1,52 +1,134 @@
 'use client'
 
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 
 interface Todo {
     id: string;
-    text: string;
+    content: string;
     completed: boolean;
 }
 
-export default function TodoList() {
+export default function TodoList({userId}: { userId: string }) {
     const [todos, setTodos] = useState<Todo[]>([]);
     const [input, setInput] = useState<string>("");
 
     useEffect(() => {
-        const savedTodos = localStorage.getItem("todos");
-        if (savedTodos) {
-            setTodos(JSON.parse(savedTodos));
-        }
-    }, []);
+        const fetchTodos = async () => {
+            const savedTasks = localStorage.getItem("todos");
+
+            if (savedTasks) {
+                setTodos(JSON.parse(savedTasks));
+            } else {
+                try {
+                    const response = await fetch(`/api/task?userId=${userId}`);
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch tasks: ${response.statusText}`);
+                    }
+
+                    const body = await response.json();
+
+                    if (Array.isArray(body.tasks)) {
+                        setTodos(body.tasks);
+                        localStorage.setItem("todos", JSON.stringify(body.tasks));
+                    } else {
+                        console.error("Tasks are not in the expected format.");
+                    }
+                } catch (error) {
+                    console.error("Error fetching tasks:", error);
+                }
+            }
+        };
+
+        fetchTodos();
+    }, [userId]);
 
     useEffect(() => {
-        if (todos.length) {
+        if (todos.length > 0) {
             localStorage.setItem("todos", JSON.stringify(todos));
         }
+
     }, [todos]);
 
-    const addTodo = () => {
+    const addTodo = async () => {
         if (input.trim()) {
             const newTodo = {
-                id: Date.now().toString(),
-                text: input,
-                completed: false
+                content: input,
+                userId: userId,
+                completed: false,
             };
-            setTodos((prevTodos) => [...prevTodos, newTodo]);
-            setInput("");
+
+            try {
+                const response = await fetch("/api/task", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(newTodo),
+                });
+
+                const {newTask, status} = await response.json();
+
+                if (status === 201) {
+                    setTodos((prevTodos) => {
+                        if (Array.isArray(prevTodos)) {
+                            return [...prevTodos, newTask];
+                        } else {
+                            console.error("prevTodos is not an array", prevTodos);
+                            return [newTask];
+                        }
+                    });
+                    setInput("");
+                } else {
+                    console.error("Failed to add task");
+                }
+            } catch (error) {
+                console.error("Error adding task:", error);
+            }
         }
     };
 
-    const toggleTodo = (id: string) => {
-        setTodos((prevTodos) =>
-            prevTodos.map(todo =>
-                todo.id === id ? { ...todo, completed: !todo.completed } : todo
-            )
-        );
+    const toggleTodo = async (id: string) => {
+        const todoToUpdate = todos.find((todo) => todo.id === id);
+        if (!todoToUpdate) return;
+
+        try {
+            const updatedCompleted = !todoToUpdate.completed;
+
+            const response = await fetch(`/api/task/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({completed: updatedCompleted}),
+            });
+
+            if (response.status === 200) {
+                const data = await response.json();
+                const updatedTask = data.task;
+                setTodos((prevTodos) =>
+                    prevTodos.map((todo) =>
+                        todo.id === id ? updatedTask : todo
+                    )
+                );
+            } else {
+                console.error("Failed to update task");
+            }
+        } catch (error) {
+            console.error("Error toggling task:", error);
+        }
     };
 
-    const removeTodo = (id: string) => {
-        setTodos((prevTodos) => prevTodos.filter(todo => todo.id !== id));
+    const removeTodo = async (id: string) => {
+        const response = await fetch(`/api/task/${id}`, {
+            method: "DELETE",
+        });
+
+        if (response.status === 204) {
+            setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+        } else {
+            console.error("Failed to delete task");
+        }
+
     };
 
     return (
@@ -70,28 +152,31 @@ export default function TodoList() {
             </div>
 
             <ul className="mt-6">
-                {todos.map((todo) => (
-                    <li
-                        key={todo.id}
-                        className={`flex items-center justify-between mt-2 ${todo.completed ? 'line-through text-gray-500' : ''}`}
-                    >
-                        <span>{todo.text}</span>
-                        <div>
-                            <button
-                                onClick={() => toggleTodo(todo.id)}
-                                className="mx-2 p-1 bg-green-500 text-white rounded-3xl"
-                            >
-                                {todo.completed ? "Undo" : "Complete"}
-                            </button>
-                            <button
-                                onClick={() => removeTodo(todo.id)}
-                                className="p-1 bg-red-500 text-white rounded-3xl"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </li>
-                ))}
+                {Array.isArray(todos) && todos.length > 0 ? (
+                    todos.map((todo) => (
+                        <li
+                            key={todo.id}
+                            className={`flex items-center justify-between mt-2 ${todo.completed ? 'line-through text-gray-500' : ''}`}
+                        >
+                            <span>{todo.content}</span>
+                            <div>
+                                <button
+                                    onClick={() => toggleTodo(todo.id)}
+                                    className="mx-2 p-1 bg-green-500 text-white rounded-3xl"
+                                >
+                                    {todo.completed ? "Undo" : "Complete"}
+                                </button>
+                                <button
+                                    onClick={() => removeTodo(todo.id)}
+                                    className="p-1 bg-red-500 text-white rounded-3xl"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </li>
+                    ))
+                ) : null}
+
             </ul>
         </div>
     );
