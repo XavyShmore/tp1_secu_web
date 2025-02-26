@@ -6,7 +6,7 @@ export function middleware(req: NextRequest) {
     const userCookie = req.cookies.get("user")?.value;
     console.log("Cookie user:", userCookie);
 
-    const protectedRoutes = ["/hidden", "/profile"];
+    const protectedRoutes = ["/hidden", "/profile", "/task"];
 
     if (!userCookie && protectedRoutes.some(route => req.nextUrl.pathname.startsWith(route))) {
         console.log("redirection vers /sign-in");
@@ -16,7 +16,3 @@ export function middleware(req: NextRequest) {
     console.log("Accès autorisé !");
     return NextResponse.next();
 }
-
-export const config = {
-    matcher: ["/hidden", "/profile"],
-};

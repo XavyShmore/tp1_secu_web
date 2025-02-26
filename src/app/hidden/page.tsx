@@ -5,6 +5,7 @@ import TodoList from "@/app/components/todo-list";
 import Navbar from "@/app/components/navbar";
 
 interface user {
+    id: string;
     name: string;
     email: string;
 }
@@ -37,6 +38,7 @@ export default function Hidden() {
         const response = await fetch("/api/auth/sign-out", {method: "POST"});
         if (response.status === 200) {
             localStorage.removeItem("isAuthenticated");
+            localStorage.removeItem("todos");
             window.location.reload();
         }
     };
@@ -49,7 +51,7 @@ export default function Hidden() {
                 <p>No user found.</p>
         );
 
-    const todoBody = (user:user)=>(
+    const todoBody = (user: user)=>(
             <div>
                 <p>Congratulations <b>{user.name}</b>, you have accessed the hidden page</p>
                 <p>If you want to sign out click on button below : </p>
@@ -58,7 +60,7 @@ export default function Hidden() {
                         onClick={handleSignOut}>
                     Sign out
                 </button>
-                <TodoList/>
+                <TodoList userId={user.id}/>
             </div>
         );
 
