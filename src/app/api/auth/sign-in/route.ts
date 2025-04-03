@@ -3,8 +3,7 @@ import bcrypt from "bcrypt";
 import {NextRequest, NextResponse} from "next/server";
 import { z } from "zod";
 
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$/;
-const emailValidator = z.string().regex(emailRegex, "Invalid email format.");
+const emailValidator = z.string().email({message: 'Invalid email format.'})
 
 const prisma = new PrismaClient();
 
@@ -19,7 +18,6 @@ export async function POST(req: NextRequest) {
     if (!emailValidation.success) {
         return NextResponse.json({ message: emailValidation.error.errors[0].message }, { status: 401 });
     }
-
 
     const user = await prisma.user.findUnique({ where: { email } });
 

@@ -11,37 +11,24 @@ interface Todo {
 export default function TodoList({userId}: { userId: string }) {
     const [todos, setTodos] = useState<Todo[]>([]);
     const [input, setInput] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     useEffect(() => {
         const fetchTodos = async () => {
-            const savedTasks = localStorage.getItem("todos");
+            try {
+                const response = await fetch(`/api/task?userId=${userId}`);
 
-            if (savedTasks) {
-                setTodos(JSON.parse(savedTasks));
-            } else {
-                try {
-                    const response = await fetch(`/api/task?userId=${userId}`);
-
-                    if (response.status === 200) {
-                        const body = await response.json();
-                        setTodos(body.tasks);
-                        localStorage.setItem("todos", JSON.stringify(body.tasks));
-                    }
-                } catch (error) {
-                    console.error("Error fetching tasks:", error);
+                if (response.status === 200) {
+                    const body = await response.json();
+                    setTodos(body.tasks);
                 }
+            } catch (error) {
+                console.error("Error fetching tasks:", error);
             }
         };
 
         fetchTodos();
     }, [userId]);
-
-    useEffect(() => {
-        if (todos.length > 0) {
-            localStorage.setItem("todos", JSON.stringify(todos));
-        }
-
-    }, [todos]);
 
     const addTodo = async () => {
         if (input.trim()) {
@@ -60,16 +47,20 @@ export default function TodoList({userId}: { userId: string }) {
                     body: JSON.stringify(newTodo),
                 });
 
-                const {newTask, status} = await response.json();
+                const {content, status} = await response.json();
+
 
                 if (status === 201) {
                     setTodos((prevTodos) => {
-                        return [...prevTodos, newTask];
+                        return [...prevTodos, content];
                     });
-                    setInput("");
+
                 } else {
-                    console.error("Failed to add task");
+                    console.log("contettttt: ", content);
+                    setErrorMessage(content);
                 }
+
+                setInput("");
             } catch (error) {
                 console.error("Error adding task:", error);
             }
@@ -123,6 +114,8 @@ export default function TodoList({userId}: { userId: string }) {
     return (
         <div className="flex flex-col items-center justify-center p-16 text-center">
             <h1 className="text-2xl font-bold">Todo List</h1>
+
+            {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
 
             <div className="mt-4">
                 <input
