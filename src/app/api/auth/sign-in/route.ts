@@ -1,6 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import {NextRequest, NextResponse} from "next/server";
+import { z } from "zod";
+
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$/;
+const emailValidator = z.string().refine((email: string) => {emailRegex.test(email);});
+const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+const passwordValidator = z.string().refine((password) => {passwordRegex.test(password);});
+
 
 const prisma = new PrismaClient();
 
@@ -10,6 +17,7 @@ export async function POST(req: NextRequest) {
     if (!email || !password) {
         return NextResponse.json({ message: 'Email and password needed.' }, {status: 400 });
     }
+
 
     const user = await prisma.user.findUnique({ where: { email } });
 
