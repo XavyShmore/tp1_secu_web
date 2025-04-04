@@ -16,7 +16,7 @@ export default function TodoList({userId}: { userId: string }) {
     useEffect(() => {
         const fetchTodos = async () => {
             try {
-                const response = await fetch(`/api/task?userId=${userId}`);
+                const response = await fetch(`/api/task?userId=${userId}`, {credentials: "include"});
 
                 if (response.status === 200) {
                     const body = await response.json();
@@ -44,6 +44,7 @@ export default function TodoList({userId}: { userId: string }) {
                     headers: {
                         "Content-Type": "application/json",
                     },
+                    credentials: "include",
                     body: JSON.stringify(newTodo),
                 });
 
@@ -79,6 +80,7 @@ export default function TodoList({userId}: { userId: string }) {
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
                 body: JSON.stringify({completed: updatedCompleted}),
             });
 
@@ -101,6 +103,7 @@ export default function TodoList({userId}: { userId: string }) {
     const removeTodo = async (id: string) => {
         const response = await fetch(`/api/task/${id}`, {
             method: "DELETE",
+            credentials: "include",
         });
 
         if (response.status === 204) {

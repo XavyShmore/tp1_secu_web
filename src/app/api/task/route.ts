@@ -19,6 +19,11 @@ export async function GET(req: NextRequest) {
         const url = new URL(req.url);
         const userId = url.searchParams.get('userId');
 
+        const userCookie = req.cookies.get("user")?.value;
+        if (userCookie !== userId) {
+            return NextResponse.json({message: "Unauthorized"}, {status: 401});
+        }
+
         if (!userId) {
             return NextResponse.json({ message: "userId is required" }, { status: 400 });
         }
@@ -44,6 +49,11 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     try {
         const { content, userId } = await req.json();
+
+        const userCookie = req.cookies.get("user")?.value;
+        if (userCookie !== userId) {
+            return NextResponse.json({message: "Unauthorized"}, {status: 401});
+        }
 
         const validationResult = taskValidator.safeParse({ content, userId });
         if (!validationResult.success) {
