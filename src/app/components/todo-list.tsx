@@ -47,18 +47,19 @@ export default function TodoList({userId}: { userId: string }) {
                     credentials: "include",
                     body: JSON.stringify(newTodo),
                 });
+                const status = response.status;
 
-                const {content, status} = await response.json();
-
+                const content = await response.json();
+                const newTask = content.message;
 
                 if (status === 201) {
                     setTodos((prevTodos) => {
-                        return [...prevTodos, content];
+                        return [...prevTodos, newTask];
                     });
 
                 } else {
-                    console.log("contettttt: ", content);
-                    setErrorMessage(content);
+                    console.log("contettttt: ", newTask);
+                    setErrorMessage(newTask);
                 }
 
                 setInput("");
