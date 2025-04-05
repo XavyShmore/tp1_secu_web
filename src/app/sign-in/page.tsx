@@ -51,7 +51,6 @@ export default function SignIn() {
                     <input
                         className="rounded-3xl p-1 border border-gray-300 focus:outline-none focus:border-blue-500 w-full text-black"
                         id="email"
-                        type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
