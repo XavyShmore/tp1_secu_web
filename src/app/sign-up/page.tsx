@@ -78,12 +78,11 @@ export default function SignUp() {
                 </div>
 
                 <div className="flex flex-col mt-4 px-4 py-2 w-full">
-                    <label htmlFor="email" className="text-left">Email:</label>
+                    <label  className="text-left">Email:</label>
                     <input
                         className="rounded-3xl p-1 border border-gray-300 focus:outline-none focus:border-blue-500 w-full text-black"
                         id="email"
                         name="email"
-                        type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required

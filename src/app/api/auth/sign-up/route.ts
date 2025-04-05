@@ -1,8 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import { z } from 'zod';
 
 const prisma = new PrismaClient();
+
+const nameValidator = z.string().regex(/^[a-zA-Z\s]+$/, {
+    message: "Name must only contain letters.",
+});
+
+const passwordValidator  = z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters long." })
+    .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter." })
+    .regex(/\d/, { message: "Password must contain at least one number." })
+    .regex(/[!@#$%^&*]/, { message: "Password must contain at least one special character." });
+
+const userCreateSchema = z.object({
+    name: nameValidator,
+    email: z.string().email({message: 'Invalid email format. a@a.a requested.'}),
+    password: passwordValidator,
+})
 
 export async function POST(req: NextRequest) {
     const { name, email, password } = await req.json();
@@ -11,20 +29,20 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: 'All fields are required.' }, { status: 400 });
     }
 
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$/;
-    if (!emailRegex.test(email)) {
-        return NextResponse.json({ message: 'Invalid email format. a@a.a requested' }, { status: 400 });
-    }
+    const userCreateValidation = userCreateSchema.safeParse({
+        name: name,
+        email: email,
+        password: password
+    });
 
+    if (!userCreateValidation.success) {
+        return NextResponse.json({ message: userCreateValidation.error.errors[0].message }, { status: 401 });
+    }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
 
     if (existingUser) {
         return NextResponse.json({ message: 'This email is already used.' }, { status: 400 });
-    }
-
-    if (password.length < 6 || !/[A-Z]/.test(password) || !/\d/.test(password)) {
-        return NextResponse.json({message: 'Password is too simple.' }, {status: 400})
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);

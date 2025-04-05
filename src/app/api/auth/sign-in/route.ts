@@ -1,6 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import {NextRequest, NextResponse} from "next/server";
+import { z } from "zod";
+
+const emailValidator = z.string().email({message: 'Invalid email format.'})
 
 const prisma = new PrismaClient();
 
@@ -9,6 +12,11 @@ export async function POST(req: NextRequest) {
 
     if (!email || !password) {
         return NextResponse.json({ message: 'Email and password needed.' }, {status: 400 });
+    }
+
+    const emailValidation = emailValidator.safeParse(email);
+    if (!emailValidation.success) {
+        return NextResponse.json({ message: emailValidation.error.errors[0].message }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
