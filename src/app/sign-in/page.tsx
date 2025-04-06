@@ -27,6 +27,7 @@ export default function SignIn() {
             });
 
             const data = await response.json();
+            const status = response.status;
 
             if (status === 200) {
                 router.push("/hidden");

@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import checkAuth from "@/app/api/auth/check-auth";
 
 const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
-    const userId = req.cookies.get("user")?.value;
+    let userId:string;
+    try{
+        userId = await checkAuth(req.cookies.get("user")?.value);
+    } catch (error){
+        return NextResponse.json({message: error.message}, { status: 401});
+    }
 
     if (!userId) {
         return NextResponse.json({ message: 'User not found' }, { status: 404 });
