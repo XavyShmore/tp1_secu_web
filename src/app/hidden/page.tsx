@@ -24,8 +24,6 @@ export default function Hidden() {
                     const data = await response.json();
                     setUser(data.user);
                 } else {
-                    console.error("Could not find user");
-                    localStorage.removeItem("isAuthenticated");
                     router.push("/");
                 }
             } catch (error) {
@@ -41,8 +39,6 @@ export default function Hidden() {
     const handleSignOut = async () => {
         const response = await fetch("/api/auth/sign-out", {method: "POST"});
         if (response.status === 200) {
-            localStorage.removeItem("isAuthenticated");
-            localStorage.removeItem("todos");
             window.location.reload();
         }
     };

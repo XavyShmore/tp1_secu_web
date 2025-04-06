@@ -9,10 +9,6 @@ function Snowfall() {
 
     useEffect(() => {
         setFlakes(new Array(50).fill(0).map((_, i) => i));
-        const isAuthenticated = localStorage.getItem("isAuthenticated");
-        if (isAuthenticated === "true") {
-            router.push("/hidden");
-        }
     }, [router]);
 
     return (
