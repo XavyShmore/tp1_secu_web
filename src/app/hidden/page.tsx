@@ -34,7 +34,7 @@ export default function Hidden() {
         }
 
         fetchUserData();
-    }, []);
+    }, [router]);
 
     const handleSignOut = async () => {
         const response = await fetch("/api/auth/sign-out", {method: "POST"});

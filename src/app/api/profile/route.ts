@@ -8,8 +8,12 @@ export async function GET(req: NextRequest) {
     let userId:string;
     try{
         userId = await checkAuth(req.cookies.get("user")?.value);
-    } catch (error){
-        return NextResponse.json({message: error.message}, { status: 401});
+    }
+    catch (error){
+        if (error instanceof Error) {
+            return NextResponse.json({message: error.message}, {status: 401});
+        }
+        return NextResponse.json({message: "Not authenticated"}, {status: 401});
     }
 
     if (!userId) {

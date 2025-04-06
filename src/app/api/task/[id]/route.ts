@@ -16,7 +16,10 @@ export async function PUT(req: NextRequest) {
     try{
         userId = await checkAuth(req.cookies.get("user")?.value);
     } catch (error){
-        return NextResponse.json({message: error.message}, {status: 401});
+        if (error instanceof Error) {
+            return NextResponse.json({message: error.message}, {status: 401});
+        }
+        return NextResponse.json({message: "Not authenticated"}, {status: 401});
     }
 
     try {
@@ -56,7 +59,10 @@ export async function DELETE(req: NextRequest) {
     try{
         userId = await checkAuth(req.cookies.get("user")?.value);
     } catch (error){
-        return NextResponse.json({message: error.message}, {status: 401});
+        if (error instanceof Error) {
+            return NextResponse.json({message: error.message}, {status: 401});
+        }
+        return NextResponse.json({message: "Not authenticated"}, {status: 401});
     }
 
     const id = req.nextUrl.pathname.split('/').pop()!;
