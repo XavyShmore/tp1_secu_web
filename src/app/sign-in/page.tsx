@@ -28,7 +28,7 @@ export default function SignIn() {
 
             const data = await response.json();
 
-            if (data.status === 200) {
+            if (status === 200) {
                 router.push("/hidden");
             } else {
                 setError(data.message)

@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
             },
         });
 
-        return NextResponse.json({tasks: tasks, status: 200 });
+        return NextResponse.json({tasks: tasks},{ status: 200 });
     } catch (error) {
         console.error("Error fetching tasks:", error);
         return NextResponse.json({ message: "Error fetching tasks" }, { status: 500 });

@@ -36,7 +36,7 @@ export async function PUT(req: NextRequest) {
             },
         });
 
-        return NextResponse.json({task: updatedTask, status: 200 });
+        return NextResponse.json({task: updatedTask}, {status: 200 });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ message: "Error while updating task" }, { status: 500 });

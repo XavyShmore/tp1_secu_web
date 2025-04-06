@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: 'Email or password invalid', user}, {status: 401 });
     }
 
-    const response = NextResponse.json({ message: 'Connection successful', user, status: 200 });
+    const response = NextResponse.json({ message: 'Connection successful', user});
 
     response.cookies.set('user', user.id, {
         httpOnly: true,

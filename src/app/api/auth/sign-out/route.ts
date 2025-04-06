@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-export async function POST() {
     const response = NextResponse.json({ message: 'Sign out successful', status: 200 });
+    const response = NextResponse.json({ message: 'Sign out successful'});
 
     response.cookies.set('user', '', {
         httpOnly: true,

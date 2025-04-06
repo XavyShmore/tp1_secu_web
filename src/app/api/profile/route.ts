@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     const userId = req.cookies.get("user")?.value;
 
     if (!userId) {
-        return NextResponse.json({ message: 'User not authenticated' }, { status: 401 });
+        return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
     const user = await prisma.user.findUnique({
@@ -23,5 +23,5 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ user, status: 200 });
+    return NextResponse.json({ user });
 }
